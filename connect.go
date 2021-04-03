@@ -10,6 +10,7 @@ import (
 //
 type Connection struct {
 	cid  string
+	
 	conn gnet.Conn
 }
 

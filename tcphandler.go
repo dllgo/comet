@@ -58,7 +58,6 @@ func (eh *TCPHandler) OnOpened(c gnet.Conn) (out []byte, action gnet.Action) {
 	connid := GenCid()
 	ctx := context.WithValue(context.Background(), "cid", connid)
 	log.Println(fmt.Sprintf("[TcpHandler OnOpened] client: %v open. RemoteAddr:%v", connid, c.RemoteAddr().String()))
-	log.Println("[TcpHandler OnOpened] Conn count:", eh.gnetServer.CountConnections())
 	ConnectHandlerIns().C(connid, c)
 	c.SetContext(ctx)
 	return
