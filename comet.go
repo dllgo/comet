@@ -6,23 +6,28 @@ type comet struct {
 	server IServer
 }
 
-var defaultComet = newComet()
+var defaultComet = NewComet()
 
 /*
 初始化comet
 */
-func newComet() *comet {
+func NewComet() *comet {
 	c := comet{
 		server: NewServer(),
 	}
 	return &c
 }
-
+/*
+设置消息处理器
+*/
+func (c *comet) SetMsgHandler(msgHandler MsgHandler) {
+	c.server.SetMsgHandler(msgHandler)
+}
 /*
 启动comet
 */
-func Serve(port int) {
+func (c *comet)Serve(port int) {
 	// 启动comet服务
-	defaultComet.server.Serve(port)
+	c.server.Serve(port)
 	fmt.Printf("Starting comet server at :%d...\n", port)
 }

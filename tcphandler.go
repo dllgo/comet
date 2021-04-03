@@ -16,10 +16,11 @@ var tcponce sync.Once
 var tcpinstance *TCPHandler
 
 //Tcp 服务单例
-func TCPHandlerIns() *TCPHandler {
+func TCPHandlerIns(msgHandler MsgHandler) *TCPHandler {
 	tcponce.Do(func() {
 		tcpinstance = &TCPHandler{
 			pool: goroutine.Default(),
+			msgHandler:msgHandler,
 		}
 	})
 	return tcpinstance
@@ -31,6 +32,7 @@ type TCPHandler struct {
 	codec      gnet.ICodec
 	pool       *goroutine.Pool
 	gnetServer gnet.Server
+	msgHandler MsgHandler
 }
 
 /*
@@ -97,13 +99,24 @@ func (eh *TCPHandler) Tick() (delay time.Duration, action gnet.Action) {
 func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.Action) {
 	// Use ants pool to unblock the event-loop.
 	err := eh.pool.Submit(func() {
-		WorkHandlerIns().handleFrame(frame, c)
+		// WorkHandlerIns().handleFrame(frame, c)
+		eh.handle(frame,c)
 	})
 
 	if err != nil {
 		log.Println("[React] error:", err)
 	}
 	return
+}
+/**
+处理接收到的消息
+*/
+func (eh *TCPHandler) handle(frame []byte, c gnet.Conn) {
+	ctx := c.Context().(context.Context)
+	out,err := eh.msgHandler(ctx,frame)
+	if err==nil {
+		c.AsyncWrite(out)
+	}
 }
 
 // Size 在线人数

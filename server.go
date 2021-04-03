@@ -9,7 +9,8 @@ import (
 )
 
 //
-type server struct {
+type server struct {  
+	msgHandler MsgHandler
 }
 
 /*
@@ -19,7 +20,12 @@ func NewServer() IServer {
 	s := server{}
 	return &s
 }
-
+/*
+设置消息处理器
+*/
+func (s *server) SetMsgHandler(msgHandler MsgHandler) {
+	s.msgHandler = msgHandler
+}
 /*
 准备启动服务的资源
 */
@@ -30,7 +36,7 @@ func (s *server) StartTcpServe(port int) {
 		port = 9000
 	}
 	log.Fatal(gnet.Serve(
-		TCPHandlerIns(),
+		TCPHandlerIns(s.msgHandler),
 		fmt.Sprintf("tcp://:%v", port),
 		gnet.WithMulticore(true),
 		// gnet.WithTCPKeepAlive(time.Minute*5), // todo 需要确定是否对长连接有影响
@@ -72,5 +78,8 @@ func (s *server) Serve(port int) {
 */
 func (s *server) Stop() {
 	log.Println("[CometServer] stop")
-
+}
+ 
+func (s *server)HandlerMessage(msgHandler MsgHandler){
+	return msgHandler()
 }

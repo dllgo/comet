@@ -165,3 +165,17 @@ message SyncOutput {
     repeated Message messages = 1; // 消息列表
     bool has_more = 2; // 是否有更多数据
 }
+
+
+// 上行数据
+message Request {
+    string seq = 1; // 序列号
+    string cmd = 2; // cmd
+    string msg = 3; // msg
+}
+
+// 上行数据
+message Response {
+    string seq = 1; // 序列号
+    string msg = 2; // msg
+}
