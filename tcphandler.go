@@ -46,9 +46,7 @@ func (eh *TCPHandler) Release() {
 /*
 gnet 服务启动成功
 */
-func (eh *TCPHandler) OnInitComplete(server gnet.Server) (action gnet.Action) {
-	log.Printf("[TcpHandler OnInitComplete] listening on %s (multi-cores: %t, loops: %d)\n",
-		server.Addr.String(), server.Multicore, server.NumEventLoop)
+func (eh *TCPHandler) OnInitComplete(server gnet.Server) (action gnet.Action) { 
 	eh.gnetServer = server
 	return
 }
@@ -57,18 +55,6 @@ func (eh *TCPHandler) OnInitComplete(server gnet.Server) (action gnet.Action) {
 gnet 新建连接
 */
 func (eh *TCPHandler) OnOpened(c gnet.Conn) (out []byte, action gnet.Action) {
-	connid := GenCid()
-	ctx := context.WithValue(context.Background(), "cid", connid)
-	c.SetContext(ctx)
-	//
-	conn := NewConn(connid, c)
-	ConnectHandlerIns().C(connid, conn)
-
-	log.Println(fmt.Sprintf("[TcpHandler OnOpened] client: %v open. RemoteAddr:%v", connid, c.RemoteAddr().String()))
-	
-	if eh.eventHandler!=nil {
-		eh.eventHandler.OnOpened(conn)
-	}
 	return
 }
 
@@ -81,30 +67,13 @@ func (eh *TCPHandler) OnClosed(c gnet.Conn, err error) (action gnet.Action) {
 		return
 	}
 	ctx := c.Context().(context.Context)
-	cid := ctx.Value("cid").(string)
-	log.Println("[TcpHandler OnClosed] client: " + GetAddrByCid(cid) + " Close;===Conn count:" + strconv.FormatInt(eh.Size(), 10))
+	cid := ctx.Value("uid").(string)
 	if eh.eventHandler!=nil { 
 		eh.eventHandler.OnClosed(eh.GetConn(c),err)
-	}
+	} 
 	ConnectHandlerIns().D(cid)
 	return
 }
-
-// 定时器
-func (eh *TCPHandler) Tick() (delay time.Duration, action gnet.Action) {
-	log.Println("[TcpHandler OnTick] Tick: " + strconv.FormatInt(eh.Size(), 10))
-	ConnectHandlerIns().Each(func(key, value interface{}) bool {
-		addr := key.(string)
-		c := value.(gnet.Conn)
-		c.AsyncWrite([]byte(fmt.Sprintf("heart beating to %s\n", addr)))
-		return true
-	})
-	var interval time.Duration
-	interval = 20 * time.Second
-	delay = interval 
-	return
-}
-
 //接收数据
 func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.Action) {
 	// Use ants pool to unblock the event-loop.
@@ -125,7 +94,7 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 */
 func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
 	ctx := c.Context().(context.Context)
-	cid := ctx.Value("cid").(string)
+	cid := ctx.Value("uid").(string)
 	conn,_ := ConnectHandlerIns().R(cid)
 	return conn.(IConn)
 }
@@ -133,5 +102,4 @@ func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
 // Size 在线人数
 func (eh *TCPHandler) Size() int64 {
 	return ConnectHandlerIns().Size()
-
 }

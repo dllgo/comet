@@ -35,7 +35,7 @@ func (s *server) StartTcpServe(port int) {
 		fmt.Sprintf("tcp://:%v", port),
 		gnet.WithMulticore(true),
 		// gnet.WithTCPKeepAlive(time.Minute*5), // todo 需要确定是否对长连接有影响
-		gnet.WithTicker(true),
+		// gnet.WithTicker(true),
 	))
 }
 
@@ -52,8 +52,8 @@ func (s *server) StartWSSServe(port int) {
 		WSSHandlerIns(),
 		fmt.Sprintf("tcp://:%v", port),
 		gnet.WithMulticore(true),
-		gnet.WithTCPKeepAlive(time.Minute*5), // todo 需要确定是否对长连接有影响
-		gnet.WithTicker(true),
+		// gnet.WithTCPKeepAlive(time.Minute*5), // todo 需要确定是否对长连接有影响
+		// gnet.WithTicker(true),
 	))
 }
 

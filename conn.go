@@ -9,15 +9,14 @@ import (
 
 //
 type Conn struct {
-	cid  string
-	
+	uid  string
 	conn gnet.Conn
 }
 
 //
-func NewConn(cid string, conn gnet.Conn) IConn {
+func NewConn(uid string, conn gnet.Conn) IConn {
 	return &Conn{
-		cid:  cid,
+		ui:  uid,
 		conn: conn,
 	}
 }
@@ -35,7 +34,6 @@ func (c *Conn)SetContext(ctx interface{}){
 	if c.conn != nil {
 		c.conn.SetContext(ctx)
 	}
-
 }
 
 // LocalAddr is the connection's local socket address.
@@ -62,6 +60,7 @@ func (c *Conn)Read() (buf []byte){
 		return nil
 	}
 	return c.conn.Read()
+	
 }
    
 // AsyncWrite writes data to client/connection asynchronously, usually you would call it in individual goroutines
@@ -70,7 +69,8 @@ func (c *Conn)AsyncWrite(buf []byte) error{
 	if c.conn == nil {
 		return errors.New("[Connection.AsyncWrite] conn not exist")
 	}
-	return c.conn.AsyncWrite(buf)
+	c.conn.AsyncWrite(buf)
+	return nil
 }
 
 // Close closes the current connection.
@@ -78,5 +78,6 @@ func (c *Conn)Close() error{
 	if c.conn == nil {
 		return errors.New("[Connection.Close] conn not exist")
 	}
-	return c.conn.Close()
+	c.conn.Close()
+	return nil
 }

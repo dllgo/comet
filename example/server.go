@@ -11,17 +11,13 @@ import (
 type EventHandler struct {
 	comet.IEvent
 } 
-func (e *EventHandler)OnOpened(c comet.IConn) (out []byte){
-	log.Println(fmt.Sprintf("[EventHandler OnOpened] client: RemoteAddr:%v", c.RemoteAddr().String()))
-	
-} 
 func (e *EventHandler)OnClosed(c comet.IConn, err error){
-	log.Println("[EventHandler OnClosed] client: " + c.LocalAddr().String() )
-	
+	log.Println("[EventHandler OnClosed] client: " + c.RemoteAddr().String() )
 }
 func (e *EventHandler)OnMessage(frame []byte, c comet.IConn) (out []byte){
 	log.Println("[React] frame:", frame)
-	return nil
+	c.AsyncWrite(frame)
+	return 
 }
  
 func (e *EventHandler)Tick() (delay time.Duration){
