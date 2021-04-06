@@ -11,6 +11,7 @@ import (
 //
 type server struct {
 	msgHandler MsgHandler
+	event IEvent
 }
 
 /*
@@ -67,10 +68,11 @@ func (s *server) StartWSSServe(port int) {
 /*
 启动服务
 */
-func (s *server) Serve(port int) {
+func (s *server) Serve(event IEvent,port int) {
 	log.Println("[CometServer] start run Server")
 	// go s.StartWSSServe(port + 1)
 	// 准备启动服务的资源
+	s.event = event
 	s.StartTcpServe(port)
 
 }
