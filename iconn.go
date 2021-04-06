@@ -1,5 +1,7 @@
 package comet
 
+import "net"
+
 type IConn interface {
 	
    // Context returns a user-defined context.

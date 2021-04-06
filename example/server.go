@@ -1,14 +1,15 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/dllgo/comet"
 )
 //tcp event
 type EventHandler struct {
-	*comet.IEvent
+	comet.IEvent
 } 
 func (e *EventHandler)OnOpened(c comet.IConn) (out []byte){
 	log.Println(fmt.Sprintf("[EventHandler OnOpened] client: RemoteAddr:%v", c.RemoteAddr().String()))
@@ -32,6 +33,5 @@ func (e *EventHandler)Tick() (delay time.Duration){
 
 func main() {
 	srv := comet.NewComet()
-	srv.SetMsgHandler(React)
 	srv.Serve(&EventHandler{},6000)
 }

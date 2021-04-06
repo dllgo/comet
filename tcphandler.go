@@ -84,7 +84,7 @@ func (eh *TCPHandler) OnClosed(c gnet.Conn, err error) (action gnet.Action) {
 	cid := ctx.Value("cid").(string)
 	log.Println("[TcpHandler OnClosed] client: " + GetAddrByCid(cid) + " Close;===Conn count:" + strconv.FormatInt(eh.Size(), 10))
 	if eh.eventHandler!=nil { 
-		eh.eventHandler.OnClosed(GetConn(c),err)
+		eh.eventHandler.OnClosed(eh.GetConn(c),err)
 	}
 	ConnectHandlerIns().D(cid)
 	return
@@ -110,7 +110,7 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 	// Use ants pool to unblock the event-loop.
 	err := eh.pool.Submit(func() { 
 		if eh.eventHandler!=nil { 
-			eh.eventHandler.OnMessage(frame,GetConn(c))
+			eh.eventHandler.OnMessage(frame,eh.GetConn(c))
 		} 
 	})
 
@@ -123,11 +123,11 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 /**
 返回连接
 */
-fun (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
+func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
 	ctx := c.Context().(context.Context)
 	cid := ctx.Value("cid").(string)
-	conn := ConnectHandlerIns().R(cid).(IConn)
-	return conn
+	conn,_ := ConnectHandlerIns().R(cid)
+	return conn.(IConn)
 }
 
 // Size 在线人数

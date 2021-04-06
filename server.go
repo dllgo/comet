@@ -10,7 +10,6 @@ import (
 
 //
 type server struct {
-	msgHandler MsgHandler
 	event IEvent
 }
 
@@ -23,13 +22,6 @@ func NewServer() IServer {
 }
 
 /*
-设置消息处理器
-*/
-func (s *server) SetMsgHandler(msgHandler MsgHandler) {
-	s.msgHandler = msgHandler
-}
-
-/*
 准备启动服务的资源
 */
 func (s *server) StartTcpServe(port int) {
@@ -39,7 +31,7 @@ func (s *server) StartTcpServe(port int) {
 		port = 9000
 	}
 	log.Fatal(gnet.Serve(
-		TCPHandlerIns(s.msgHandler),
+		TCPHandlerIns(s.event),
 		fmt.Sprintf("tcp://:%v", port),
 		gnet.WithMulticore(true),
 		// gnet.WithTCPKeepAlive(time.Minute*5), // todo 需要确定是否对长连接有影响

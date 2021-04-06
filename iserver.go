@@ -1,7 +1,5 @@
 package comet
 
-import "context"
- 
 type IServer interface {
 	// 启动zim服务
 	Serve(event IEvent,port int)

@@ -1,6 +1,7 @@
 package comet
 
- 
+import "time"
+
 type IEvent interface {
   
 	// OnOpened fires when a new connection has been opened.

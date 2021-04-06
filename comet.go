@@ -17,17 +17,12 @@ func NewComet() *comet {
 	}
 	return &c
 }
-/*
-设置消息处理器
-*/
-func (c *comet) SetMsgHandler(msgHandler MsgHandler) {
-	c.server.SetMsgHandler(msgHandler)
-}
+
 /*
 启动comet
 */
-func (c *comet)Serve(port int) {
+func (c *comet)Serve(event IEvent,port int) {
 	// 启动comet服务
-	c.server.Serve(port)
+	c.server.Serve(event,port)
 	fmt.Printf("Starting comet server at :%d...\n", port)
 }
