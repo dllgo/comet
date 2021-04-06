@@ -2,11 +2,8 @@ package comet
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"strconv"
 	"sync"
-	"time"
 
 	"github.com/panjf2000/gnet"
 	"github.com/panjf2000/gnet/pool/goroutine"

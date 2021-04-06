@@ -3,7 +3,6 @@ package comet
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/panjf2000/gnet"
 )

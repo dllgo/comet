@@ -1,7 +1,5 @@
 package comet
 
-import "time"
-
 type IEvent interface {
 	// Parameter:out is the return value which is going to be sent back to the client.
 	OnMessage(frame []byte, c IConn)

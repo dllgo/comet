@@ -16,7 +16,7 @@ type Conn struct {
 //
 func NewConn(uid string, conn gnet.Conn) IConn {
 	return &Conn{
-		ui:  uid,
+		uid:  uid,
 		conn: conn,
 	}
 }
