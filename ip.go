@@ -1,5 +1,7 @@
 package comet
 
+import "net"
+
 //获取本机内网IP
 func getIntranetIp() string {
 	addrs, _ := net.InterfaceAddrs()
