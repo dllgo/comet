@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
-	"net"
 )
 
 const (
@@ -32,22 +31,6 @@ func GetAddrByCid(cId string) (addr string) {
 	addr, _ = Decrypt(cId, []byte(CryptoKey))
 
 	return
-}
-
-//获取本机内网IP
-func getIntranetIp() string {
-	addrs, _ := net.InterfaceAddrs()
-	for _, addr := range addrs {
-		// 检查ip地址判断是否回环地址
-		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-
-		}
-	}
-
-	return ""
 }
 
 func Encrypt(rawData, key []byte) (string, error) {
