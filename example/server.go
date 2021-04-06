@@ -1,9 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"log"
-	"time"
+import ( 
+	"log" 
 
 	"github.com/dllgo/comet"
 )
@@ -14,18 +12,12 @@ type EventHandler struct {
 func (e *EventHandler)OnClosed(c comet.IConn, err error){
 	log.Println("[EventHandler OnClosed] client: " + c.RemoteAddr().String() )
 }
-func (e *EventHandler)OnMessage(frame []byte, c comet.IConn) (out []byte){
+func (e *EventHandler)OnMessage(frame []byte, c comet.IConn){
 	log.Println("[React] frame:", frame)
 	c.AsyncWrite(frame)
 	return 
 }
- 
-func (e *EventHandler)Tick() (delay time.Duration){
-	var interval time.Duration
-	interval = 20 * time.Second
-	delay = interval 
-	return
-} 
+  
 
 func main() {
 	srv := comet.NewComet()

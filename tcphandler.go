@@ -90,10 +90,19 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 返回连接
 */
 func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
+	if c==nil {
+		return nil
+	}
 	ctx := c.Context().(context.Context)
-	cid := ctx.Value("uid").(string)
-	conn,_ := ConnectHandlerIns().R(cid)
-	return conn.(IConn)
+	if ctx !=nil {
+		cid := ctx.Value("uid").(string)
+		if len(cid) ==0 {
+			return nil
+		}
+		conn,_ := ConnectHandlerIns().R(cid)
+		return conn.(IConn)
+	}
+	return nil
 }
 
 // Size 在线人数
