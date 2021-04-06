@@ -14,6 +14,5 @@ func getIntranetIp() string {
 
 		}
 	}
-
 	return ""
 }

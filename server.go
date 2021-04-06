@@ -20,12 +20,14 @@ func NewServer() IServer {
 	s := server{}
 	return &s
 }
+
 /*
 设置消息处理器
 */
 func (s *server) SetMsgHandler(msgHandler MsgHandler) {
 	s.msgHandler = msgHandler
 }
+
 /*
 准备启动服务的资源
 */
