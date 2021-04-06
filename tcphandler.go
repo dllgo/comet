@@ -19,8 +19,8 @@ var tcpinstance *TCPHandler
 func TCPHandlerIns(msgHandler MsgHandler) *TCPHandler {
 	tcponce.Do(func() {
 		tcpinstance = &TCPHandler{
-			pool: goroutine.Default(),
-			msgHandler:msgHandler,
+			pool:       goroutine.Default(),
+			msgHandler: msgHandler,
 		}
 	})
 	return tcpinstance
@@ -100,7 +100,7 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 	// Use ants pool to unblock the event-loop.
 	err := eh.pool.Submit(func() {
 		// WorkHandlerIns().handleFrame(frame, c)
-		eh.handle(frame,c)
+		eh.handle(frame, c)
 	})
 
 	if err != nil {
@@ -108,13 +108,14 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 	}
 	return
 }
+
 /**
 处理接收到的消息
 */
 func (eh *TCPHandler) handle(frame []byte, c gnet.Conn) {
 	ctx := c.Context().(context.Context)
-	out,err := eh.msgHandler(ctx,frame)
-	if err==nil {
+	out, err := eh.msgHandler(ctx, frame)
+	if err == nil {
 		c.AsyncWrite(out)
 	}
 }

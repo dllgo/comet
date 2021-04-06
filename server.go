@@ -9,7 +9,7 @@ import (
 )
 
 //
-type server struct {  
+type server struct {
 	msgHandler MsgHandler
 }
 
@@ -80,8 +80,4 @@ func (s *server) Serve(port int) {
 */
 func (s *server) Stop() {
 	log.Println("[CometServer] stop")
-}
- 
-func (s *server)HandlerMessage(msgHandler MsgHandler){
-	return msgHandler()
 }
