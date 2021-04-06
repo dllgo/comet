@@ -90,7 +90,7 @@ func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.
 返回连接
 */
 func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
-	if c==nil {
+	if c == nil || c.Context() == nil{
 		return nil
 	}
 	ctx := c.Context().(context.Context)
