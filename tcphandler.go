@@ -16,7 +16,7 @@ var tcpinstance *TCPHandler
 func TCPHandlerIns(event IEvent) *TCPHandler {
 	tcponce.Do(func() {
 		tcpinstance = &TCPHandler{
-			pool:       goroutine.Default(),
+			pool:         goroutine.Default(),
 			eventHandler: event,
 		}
 	})
@@ -26,9 +26,9 @@ func TCPHandlerIns(event IEvent) *TCPHandler {
 //tcp event
 type TCPHandler struct {
 	*gnet.EventServer
-	codec      gnet.ICodec
-	pool       *goroutine.Pool
-	gnetServer gnet.Server
+	codec        gnet.ICodec
+	pool         *goroutine.Pool
+	gnetServer   gnet.Server
 	eventHandler IEvent
 }
 
@@ -43,7 +43,7 @@ func (eh *TCPHandler) Release() {
 /*
 gnet 服务启动成功
 */
-func (eh *TCPHandler) OnInitComplete(server gnet.Server) (action gnet.Action) { 
+func (eh *TCPHandler) OnInitComplete(server gnet.Server) (action gnet.Action) {
 	eh.gnetServer = server
 	return
 }
@@ -65,44 +65,45 @@ func (eh *TCPHandler) OnClosed(c gnet.Conn, err error) (action gnet.Action) {
 	}
 	ctx := c.Context().(context.Context)
 	cid := ctx.Value("uid").(string)
-	if eh.eventHandler!=nil { 
-		eh.eventHandler.OnClosed(eh.GetConn(c),err)
-	} 
+	if eh.eventHandler != nil {
+		eh.eventHandler.OnClosed(eh.GetConn(c), err)
+	}
 	ConnectHandlerIns().D(cid)
 	return
 }
+
 //接收数据
 func (eh *TCPHandler) React(frame []byte, c gnet.Conn) (out []byte, action gnet.Action) {
 	// Use ants pool to unblock the event-loop.
-	err := eh.pool.Submit(func() { 
-		if eh.eventHandler!=nil { 
-			eh.eventHandler.OnMessage(frame,eh.GetConn(c))
-		} 
+	err := eh.pool.Submit(func() {
+		if eh.eventHandler != nil {
+			eh.eventHandler.OnMessage(frame, eh.GetConn(c))
+		}
 	})
 
 	if err != nil {
 		log.Println("[React] error:", err)
 	}
 	return
-} 
+}
 
 /**
 返回连接
 */
 func (eh *TCPHandler) GetConn(c gnet.Conn) IConn {
-	if c == nil || c.Context() == nil{
-		return nil
+	if c == nil || c.Context() == nil {
+		return NewConn("", c)
 	}
 	ctx := c.Context().(context.Context)
-	if ctx !=nil {
+	if ctx != nil {
 		cid := ctx.Value("uid").(string)
-		if len(cid) ==0 {
-			return nil
+		if len(cid) == 0 {
+			return NewConn("", c)
 		}
-		conn,_ := ConnectHandlerIns().R(cid)
+		conn, _ := ConnectHandlerIns().R(cid)
 		return conn.(IConn)
 	}
-	return nil
+	return NewConn("", c)
 }
 
 // Size 在线人数
