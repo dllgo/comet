@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"example/pb"
 	"fmt"
 	"github.com/dllgo/comet"
 	"log"
 	"net"
+	"strconv"
 	"time"
 	"unsafe"
 
@@ -34,10 +36,15 @@ type TcpClient struct {
 	codec    *util2.Codec
 }
 
-func (c *TcpClient) Output(pt comet.PackageType, requestId int64, message proto.Message) {
-	var input = comet.Input{
-		Type:      pt,
-		RequestId: requestId,
+func (c *TcpClient) Output(s string ,p string, requestId int64, message proto.Message) {
+
+	var input = pb.Request{
+		I:       strconv.FormatInt(requestId,10),
+		ID:      "100",
+		Service: s,
+		Path:    p,
+		Version: 100,
+		ST:      requestId,
 	}
 
 	if message != nil {
@@ -82,17 +89,17 @@ func (c *TcpClient) SignIn() {
 		DeviceId: 5000000,
 		Token:    "0",
 	}
-	c.Output(comet.PackageType_PT_HANDSHAKE, time.Now().UnixNano(), &signIn)
+	c.Output("usersvc","login", time.Now().UnixNano(), &signIn)
 }
 
 func (c *TcpClient) SyncTrigger() {
-	c.Output(comet.PackageType_PT_SYNC, time.Now().UnixNano(), &comet.SyncInput{Seq: c.Seq})
+	c.Output("imsvc","sync",  time.Now().UnixNano(), &comet.SyncInput{Seq: c.Seq})
 }
 
 func (c *TcpClient) Heartbeat() {
 	ticker := time.NewTicker(time.Second * 20)
 	for range ticker.C {
-		c.Output(comet.PackageType_PT_HEARTBEAT, time.Now().UnixNano(), nil)
+		c.Output("imsvc","heartbeat", time.Now().UnixNano(), nil)
 	}
 }
 
@@ -152,7 +159,7 @@ func (c *TcpClient) HandlePackage(bytes []byte) {
 			DeviceAck:   c.Seq,
 			ReceiveTime: time.Now().UnixNano() / 1000000,
 		}
-		c.Output(comet.PackageType_PT_MESSAGE, output.RequestId, &ack)
+		c.Output("imsvc","sync",output.RequestId, &ack)
 		fmt.Println("离线消息同步结束------")
 	case comet.PackageType_PT_MESSAGE:
 		messageSend := comet.MessageSend{}
@@ -171,7 +178,7 @@ func (c *TcpClient) HandlePackage(bytes []byte) {
 			DeviceAck:   msg.Seq,
 			ReceiveTime: time.Now().UnixNano() / 1000000,
 		}
-		c.Output(comet.PackageType_PT_MESSAGE, output.RequestId, &ack)
+		c.Output("imsvc","send", output.RequestId, &ack)
 	default:
 		fmt.Println("switch other")
 	}

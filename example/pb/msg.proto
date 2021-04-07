@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package pb;
+
+message Request {
+	string I = 1;// 报文序号
+	string ID = 2;// 用户id
+	string Service = 3; //服务名
+	string Path = 4;//业务
+	uint32 Version = 5;//版本
+	int64  ST = 6;//时间戳
+	bytes  Data = 7;//请求数据
+}
+
+message RequestAck {
+	string I = 1;// 报文序号
+	string ID = 2;// 用户id
+	int64  ST = 3;//时间戳
+}
+
+message Response {
+	string I = 1;// 报文序号
+	string ID = 2;// 用户id
+	string Service = 3; //服务名
+	string Path = 4;//业务
+	uint32 Version = 5;//版本
+	int64  ST = 6;//时间戳
+	int64  Code = 7;
+	string Message = 8;
+	bytes  Data = 9;
+}
+
+message ResponseAck {
+	string I = 1;// 报文序号
+	string ID = 2;// 用户id
+	int64  ST = 3;//时间戳
+}
